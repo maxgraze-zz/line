@@ -12,6 +12,10 @@ export const GlobalStyles = createGlobalStyle`
     padding: 0;
   }
 
+  Line {
+    fill: none;
+    stroke: #000;
+  }
   html {
     scroll-behavior: smooth;
     box-sizing: inherit;
