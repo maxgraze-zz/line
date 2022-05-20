@@ -104,25 +104,28 @@ let Timeline = (props: TimelineChartProps) => {
     props.dimensions.height,
     props.dimensions.width,
   ]);
+
+  const colorAccessor = (d: D) => d.type;
   let scales = ChartHelper.getScales(
     props.data,
     props.dimensions.boundedWidth,
     props.dimensions.boundedHeight,
     props.propertiesNames,
+    colorAccessor,
   );
   const helper = new ChartHelper(props.propertiesNames);
 
   const xAccessorScaled = (d: D) => scales.xScale(helper.xAccessor(d));
   const yAccessorScaled = (d: D) => scales.yScale(helper.yAccessor(d));
   const y0AccessorScaled = scales.yScale(scales.yScale.domain()[0]);
-
-  let colorValue = d => d.type;
+  const colorAccessorScaled = (d: D) => scales.colorScale(colorAccessor(d));
   let circleRadius = 7;
   const tickSpacing = 100;
-  const colorScale = d3
-    .scaleOrdinal()
-    .domain(props.data.map(colorValue))
-    .range(['#E6842A', '#137B80', '#8E6C8A']);
+  let colorValue = d => d.type;
+  // const colorScale = d3
+  //   .scaleOrdinal()
+  //   .domain(props.data.map(colorValue))
+  //   .range(['#E6842A', '#137B80', '#8E6C8A']);
   return (
     <div id='div'>
       <svg
@@ -132,10 +135,9 @@ let Timeline = (props: TimelineChartProps) => {
         overflow='visible'
       >
         <ColorLegend
-          tickSpacing={22}
           tickTextOffset={12}
           tickSize={circleRadius}
-          colorScale={colorScale}
+          colorScale={scales.colorScale}
           tickSpacing={tickSpacing}
           tickTextOffset={40}
         />
@@ -166,6 +168,7 @@ let Timeline = (props: TimelineChartProps) => {
                 data={d.values}
                 xAccessorScaled={xAccessorScaled}
                 yAccessorScaled={yAccessorScaled}
+                colorAccessorScaled={colorAccessorScaled}
               />
             ))
           ) : (
@@ -173,6 +176,7 @@ let Timeline = (props: TimelineChartProps) => {
               data={props.data.filter(d => d.type === 'Editors')}
               xAccessorScaled={xAccessorScaled}
               yAccessorScaled={yAccessorScaled}
+              colorAccessorScaled={colorAccessorScaled}
             />
           )}
         </g>

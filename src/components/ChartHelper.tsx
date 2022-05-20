@@ -16,7 +16,7 @@ export default class ChartHelper {
 
   // @ts-ignore
   public yAccessor = (d: D) => +d[this.metric[1]];
-
+  // @ts-ignore
   static getDimensions = (
     width: number,
     height: number,
@@ -51,6 +51,7 @@ export default class ChartHelper {
     width: number,
     height: number,
     metric: string[],
+    colorAccessor: (d: D) => string,
   ) => {
     const helper = new ChartHelper(metric);
     return {
@@ -68,6 +69,10 @@ export default class ChartHelper {
         ] as number[])
         .range([height, 0])
         .nice(),
+      colorScale: d3
+        .scaleOrdinal()
+        .domain(data.map(colorAccessor))
+        .range(['#E6842A', '#137B80', '#8E6C8A']),
     };
   };
 }

@@ -65,14 +65,15 @@ text {
   font-size: 14px;
 }
 
-.viewers {
+/* .viewers {
   background: #477ede;
-  /* margin: 10px; */
-}
+  margin: 10px;
+} */
 
-.editors {
+/* .editors {
   background: #6cb36d;
-}
+} */
+
 /* .Timeline {
   height: 300px;
   min-width: 500px;
@@ -110,7 +111,6 @@ text {
 
 .Line--type-line {
   fill: none;
-  stroke: #3870d3;
   stroke-width: 2px;
   stroke-linecap: round;
 }

@@ -65,7 +65,6 @@ const ChartWidget = ({ title }: ChartWidgetProps) => {
     d3.dsv(',', '/data/dummyData.csv', d => {
       return d as unknown as D[];
     }).then(d => {
-      // d = reshapeData(d);
       return setData(d as unknown as D[]);
     });
   };
@@ -73,7 +72,6 @@ const ChartWidget = ({ title }: ChartWidgetProps) => {
     if (data.length <= 1) loadData();
   });
   // eslint-disable-next-line no-console
-
   const reshapeData = (data: D[]) => {
     let names = [...new Set(d3.map(data, d => d.type))];
     let result = names.map(name => {

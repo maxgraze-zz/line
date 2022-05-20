@@ -7,6 +7,7 @@ type LineProps = {
   data: [number, number][] | Iterable<[number, number]>; //this should be D[]
   xAccessorScaled: (d: D) => number | number;
   yAccessorScaled: (d: D) => number | number;
+  colorAccessorScaled: (d: D) => string;
 };
 
 //(d: D) =>
@@ -14,9 +15,10 @@ const Line = ({
   data,
   xAccessorScaled,
   yAccessorScaled,
+  colorAccessorScaled,
   ...props
 }: LineProps) => {
-  console.log(data);
+  //add color to take
   const lineGenerator = d3
     .line()
     .x(xAccessorScaled)
@@ -28,6 +30,7 @@ const Line = ({
       {...props}
       className={`Line Line--type-line`}
       d={lineGenerator(data) as string | undefined}
+      stroke={colorAccessorScaled(data)}
     />
   );
 };

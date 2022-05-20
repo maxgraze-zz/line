@@ -6,8 +6,8 @@ export const ColorLegend = ({
   tickSpacing = 100,
   tickSize = 10,
   tickTextOffset = 40,
-}) =>
-  colorScale.domain().map((domainValue: number, i: number) => (
+}) => {
+  return colorScale.domain().map((domainValue: number, i: number) => (
     <g className='tick' transform={`translate(${i * tickSpacing + 30}, -40)`}>
       <rect
         width='24'
@@ -23,3 +23,4 @@ export const ColorLegend = ({
       </text>
     </g>
   ));
+};
