@@ -1,87 +1,17 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import * as d3 from 'd3';
 import { D, Dimensions } from '../types';
 import ChartHelper from './ChartHelper';
 import Axis from './Axis';
 import Line from './Line';
 import { ColorLegend } from './ColorLegend';
 
-const formatDate = d3.timeFormat('%-d. %-b');
-// const dateAccessor = (d: D) => formatDate(d.date.toString());
+import { merge } from 'd3-array';
+
 let Timeline = (props: TimelineChartProps) => {
   const [loaded, setLoaded] = useState(false);
 
   const [prevHeight, setPrevHeight] = useState(props.dimensions.height);
   const [prevWidth, setPrevWidth] = useState(props.dimensions.width);
-
-  const memoizedDrawCallback = useCallback(() => {
-    // d3.select('#div').selectAll('*').remove()
-  }, []);
-
-  // const memoizedUpdateCallback = useCallback(() => {
-  //   const scales = ChartHelper.getScales(
-  //     props.data,
-  //     props.dimensions.boundedWidth,
-  //     props.dimensions.boundedHeight,
-  //     props.propertiesNames,
-  //   );
-  //   return scales
-  // const bounds = d3.select('#bounds');
-  // const helper = new ChartHelper(props.propertiesNames);
-  // // Chart
-
-  // // draw chart
-  // const linesGenerator = d3
-  //   .area()
-  //   // @ts-ignore
-  //   .x(d => scales.xScale(helper.xAccessor(d)))
-  //   // @ts-ignore
-  //   .y0(scales.yScale(0))
-  //   .y1(d => {
-  //     // @ts-ignore
-  //     return scales.yScale((d as D).value);
-  //   });
-
-  // d3.select('#path')
-  //   .attr('fill', props.fill)
-  //   .attr('stroke', props.stroke)
-  //   // @ts-ignore
-  //   .attr('d', linesGenerator(props.data));
-
-  // // Peripherals
-
-  // // yAxis
-  // const yAxisGenerator = d3.axisLeft(scales.yScale);
-  // bounds
-  //   .select('#y-axis')
-  //   // @ts-ignore
-  //   .call(yAxisGenerator);
-
-  // // xAxis
-  // const xAxisGenerator = d3.axisBottom(scales.xScale);
-  // bounds
-  //   .select('#x-axis')
-  //   // @ts-ignore
-  //   .call(xAxisGenerator)
-  //   .style('transform', `translateY(${props.dimensions.boundedHeight}px)`);
-  // }, [
-  //   props.data,
-  //   props.dimensions.boundedHeight,
-  //   props.dimensions.boundedWidth,
-  //   props.fill,
-  //   props.propertiesNames,
-  //   props.stroke,
-  // ]);
-
-  // useEffect(() => {
-  //   if (!loaded) {
-  //     setLoaded(true);
-  //     memoizedDrawCallback();
-  //     memoizedUpdateCallback();
-  //   } else {
-  //     memoizedUpdateCallback();
-  //   }
-  // }, [loaded, memoizedDrawCallback, memoizedUpdateCallback]);
 
   useEffect(() => {
     if (!loaded) {
@@ -93,39 +23,29 @@ let Timeline = (props: TimelineChartProps) => {
     if (isNewHeight || isNewWidth) {
       setPrevWidth(props.dimensions.height);
       setPrevHeight(props.dimensions.width);
-      memoizedDrawCallback();
-      // memoizedUpdateCallback();
     }
-  }, [
-    memoizedDrawCallback,
-    // memoizedUpdateCallback,
-    prevHeight,
-    prevWidth,
-    props.dimensions.height,
-    props.dimensions.width,
-  ]);
+  }, [prevHeight, prevWidth, props.dimensions.height, props.dimensions.width]);
 
-  const colorAccessor = (d: D) => d.type;
+  let mergedData = merge(props.data.map(d => d.values));
   let scales = ChartHelper.getScales(
-    props.data,
+    mergedData as D[],
     props.dimensions.boundedWidth,
     props.dimensions.boundedHeight,
     props.propertiesNames,
-    colorAccessor,
   );
-  const helper = new ChartHelper(props.propertiesNames);
 
+  const helper = new ChartHelper(props.propertiesNames);
+  // console.log(props.data[0].values[0]);
   const xAccessorScaled = (d: D) => scales.xScale(helper.xAccessor(d));
   const yAccessorScaled = (d: D) => scales.yScale(helper.yAccessor(d));
   const y0AccessorScaled = scales.yScale(scales.yScale.domain()[0]);
-  const colorAccessorScaled = (d: D) => scales.colorScale(colorAccessor(d));
+  const colorAccessorScaled = (d: D) =>
+    scales.colorScale(helper.colorAccessor(d));
+
+  // console.log(data.map(d => colorAccessorScaled(d)));
   let circleRadius = 7;
   const tickSpacing = 100;
-  let colorValue = d => d.type;
-  // const colorScale = d3
-  //   .scaleOrdinal()
-  //   .domain(props.data.map(colorValue))
-  //   .range(['#E6842A', '#137B80', '#8E6C8A']);
+
   return (
     <div id='div'>
       <svg
@@ -154,7 +74,7 @@ let Timeline = (props: TimelineChartProps) => {
             dimension='x'
             dimensions={props.dimensions}
             scale={scales.xScale}
-            formatTick={formatDate}
+            formatTick={ChartHelper.formatDate}
           />
           <Axis
             dimension='y'
@@ -163,7 +83,7 @@ let Timeline = (props: TimelineChartProps) => {
             label=''
           />
           {props.data[0].name ? (
-            props.data.map(d => (
+            props.data.map((d, i) => (
               <Line
                 data={d.values}
                 xAccessorScaled={xAccessorScaled}
@@ -173,7 +93,7 @@ let Timeline = (props: TimelineChartProps) => {
             ))
           ) : (
             <Line
-              data={props.data.filter(d => d.type === 'Editors')}
+              data={props.data}
               xAccessorScaled={xAccessorScaled}
               yAccessorScaled={yAccessorScaled}
               colorAccessorScaled={colorAccessorScaled}

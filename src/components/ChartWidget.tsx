@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from 'react';
 // import './ChartWidget.scss'
-import * as d3 from 'd3';
 import ChartHelper from './ChartHelper';
 import LineChart from './LineChart';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 import { Dimensions, D } from '../types';
+import * as d3 from 'd3';
 import React from 'react';
 // import './styles.css';
 
@@ -12,10 +12,11 @@ type ChartWidgetProps = {
   title: string;
 };
 const ChartWidget = ({ title }: ChartWidgetProps) => {
-  const [data, setData] = useState<D>([{ date: '', values: 0 }]);
+  const [data, setData] = useState<D>([{ date: '', value: 0, type: '' }]);
   // const [data, setData] = useState<D>();
 
-  const [propertiesNames] = useState(['date', 'value']);
+  //
+  const [propertiesNames] = useState(['date', 'value', 'type']);
 
   const { height, width } = useWindowDimensions();
 
@@ -65,6 +66,7 @@ const ChartWidget = ({ title }: ChartWidgetProps) => {
     d3.dsv(',', '/data/dummyData.csv', d => {
       return d as unknown as D[];
     }).then(d => {
+      d = reshapeData(d);
       return setData(d as unknown as D[]);
     });
   };
@@ -73,7 +75,7 @@ const ChartWidget = ({ title }: ChartWidgetProps) => {
   });
   // eslint-disable-next-line no-console
   const reshapeData = (data: D[]) => {
-    let names = [...new Set(d3.map(data, d => d.type))];
+    let names = [...new Set(data.map(d => d.type))];
     let result = names.map(name => {
       return {
         name: name,

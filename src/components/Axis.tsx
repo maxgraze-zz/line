@@ -1,6 +1,4 @@
-import React, { useContext } from 'react';
-import * as d3 from 'd3';
-// import { DimensionContext } from './Timeline';
+import React from 'react';
 import { Dimensions } from '../types';
 
 type DefaultAxisProps<C extends 'x' | 'y', P> = {
@@ -51,9 +49,10 @@ export function AxisHorizontal({
   ...props
 }: AxisHorizontalProps) {
   const numberOfTicks =
-    dimensions.boundedWidth < 600
-      ? dimensions.boundedWidth / 100
-      : dimensions.boundedWidth / 120;
+    // dimensions.boundedWidth < 600
+    //   ? dimensions.boundedWidth / 110
+    //   :
+    dimensions.boundedWidth / 100;
   // const numberOfTicks = dimensions.innerWidth / 100;
 
   const ticks = scale.ticks(numberOfTicks);

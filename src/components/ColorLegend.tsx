@@ -1,4 +1,3 @@
-import { color } from 'd3';
 import React from 'react';
 
 export const ColorLegend = ({

@@ -1,4 +1,6 @@
-import * as d3 from 'd3';
+import { extent, max } from 'd3-array';
+import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
+import { timeParse, timeFormat } from 'd3-time-format';
 import { Dimensions, D } from '../types';
 
 export default class ChartHelper {
@@ -8,15 +10,19 @@ export default class ChartHelper {
     this.metric = metric;
   }
 
-  static dateParser = d3.timeParse('%Y-%m-%d');
+  static dateParser = timeParse('%Y-%m-%d');
+
+  static formatDate = timeFormat('%-d. %-b');
 
   // @ts-ignore
   public xAccessor = (d: D) =>
     ChartHelper.dateParser(d[this.metric[0]] as string);
-
   // @ts-ignore
   public yAccessor = (d: D) => +d[this.metric[1]];
+
   // @ts-ignore
+  public colorAccessor = (d: D) => d[this.metric[2]];
+
   static getDimensions = (
     width: number,
     height: number,
@@ -51,28 +57,25 @@ export default class ChartHelper {
     width: number,
     height: number,
     metric: string[],
-    colorAccessor: (d: D) => string,
+    // colorAccessor: (d: D) => string,
   ) => {
     const helper = new ChartHelper(metric);
     return {
-      xScale: d3
-        .scaleTime()
-        .domain(d3.extent(data, helper.xAccessor) as [Date, Date])
+      xScale: scaleTime()
+        .domain(extent(data, helper.xAccessor) as [Date, Date])
         .range([0, width]),
-      yScale: d3
-        .scaleLinear()
+      yScale: scaleLinear()
         .domain([
           0,
-          d3.max(data, d => {
+          max(data, d => {
             return +(d.value as number);
           }),
         ] as number[])
         .range([height, 0])
         .nice(),
-      colorScale: d3
-        .scaleOrdinal()
-        .domain(data.map(colorAccessor))
-        .range(['#E6842A', '#137B80', '#8E6C8A']),
+      colorScale: scaleOrdinal()
+        .domain(['Viewers', 'Editors'])
+        .range(['#E6842A', '#137B80']),
     };
   };
 }
