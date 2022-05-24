@@ -2,10 +2,8 @@ export type D = {
   date: Date | string;
   value: number;
   type?: string;
-  series?: {
-    value: number;
-    name: string;
-  };
+  values?: number;
+  name?: string;
 };
 
 // export interface D {

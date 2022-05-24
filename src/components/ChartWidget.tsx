@@ -12,7 +12,7 @@ type ChartWidgetProps = {
   title: string;
 };
 const ChartWidget = ({ title }: ChartWidgetProps) => {
-  const [data, setData] = useState<D>([{ date: '', value: 0, type: '' }]);
+  const [data, setData] = useState<D[]>([{ date: '', value: 0, type: '' }]);
   // const [data, setData] = useState<D>();
 
   //

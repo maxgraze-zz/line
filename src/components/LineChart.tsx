@@ -40,7 +40,7 @@ let Timeline = (props: TimelineChartProps) => {
   const yAccessorScaled = (d: D) => scales.yScale(helper.yAccessor(d));
   const y0AccessorScaled = scales.yScale(scales.yScale.domain()[0]);
   const colorAccessorScaled = (d: D) =>
-    scales.colorScale(helper.colorAccessor(d));
+    scales.colorScale(helper.colorAccessor(d)) as string;
 
   // console.log(data.map(d => colorAccessorScaled(d)));
   let circleRadius = 7;
@@ -55,7 +55,6 @@ let Timeline = (props: TimelineChartProps) => {
         overflow='visible'
       >
         <ColorLegend
-          tickTextOffset={12}
           tickSize={circleRadius}
           colorScale={scales.colorScale}
           tickSpacing={tickSpacing}

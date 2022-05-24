@@ -15,8 +15,7 @@ export default class ChartHelper {
   static formatDate = timeFormat('%-d. %-b');
 
   // @ts-ignore
-  public xAccessor = (d: D) =>
-    ChartHelper.dateParser(d[this.metric[0]] as string);
+  public xAccessor = (d: D) => ChartHelper.dateParser(d[this.metric[0]]);
   // @ts-ignore
   public yAccessor = (d: D) => +d[this.metric[1]];
 
@@ -74,8 +73,8 @@ export default class ChartHelper {
         .range([height, 0])
         .nice(),
       colorScale: scaleOrdinal()
-        .domain(['Viewers', 'Editors'])
-        .range(['#E6842A', '#137B80']),
+        .domain(data.map(d => helper.colorAccessor(d)))
+        .range(['#f59c78', '#4c97f5']),
     };
   };
 }
