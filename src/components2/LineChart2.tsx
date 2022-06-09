@@ -4,7 +4,7 @@ import { D, Dimensions } from '../types';
 import ChartHelper from './ChartHelper';
 import Axis from './Axis';
 import Line from './Line';
-import { ColorLegend } from './ColorLegend';
+import { ColorLegend } from './Legend';
 import { line } from 'd3';
 
 const formatDate = d3.timeFormat('%-d. %-b');

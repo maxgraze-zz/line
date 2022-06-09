@@ -3,11 +3,14 @@ import { D, Dimensions } from '../types';
 import ChartHelper from './ChartHelper';
 import Axis from './Axis';
 import Line from './Line';
-import { ColorLegend } from './ColorLegend';
+import { ColorLegend } from './Legend';
+import LineChartDateBisector from './LineChartDateBisector';
+// import Tooltip from './Tooltip';
 
 import { merge } from 'd3-array';
 
 let Timeline = (props: TimelineChartProps) => {
+  const containerRef = React.useRef(null);
   const [loaded, setLoaded] = useState(false);
 
   const [prevHeight, setPrevHeight] = useState(props.dimensions.height);
@@ -35,8 +38,12 @@ let Timeline = (props: TimelineChartProps) => {
   );
 
   const helper = new ChartHelper(props.propertiesNames);
-  // console.log(props.data[0].values[0]);
-  const xAccessorScaled = (d: D) => scales.xScale(helper.xAccessor(d));
+  //wrap in try catch
+  const xAccessorScaled = (d: D) => scales.xScale(helper.xAccessor(d)!);
+  // const xAccessorScaled = (d: D) => {
+  //   const result = helper.xAccessor(d)
+  //   return result ? scales.xScale(result) : 0;
+  // };
   const yAccessorScaled = (d: D) => scales.yScale(helper.yAccessor(d));
   const y0AccessorScaled = scales.yScale(scales.yScale.domain()[0]);
   const colorAccessorScaled = (d: D) =>
@@ -47,7 +54,7 @@ let Timeline = (props: TimelineChartProps) => {
   const tickSpacing = 100;
 
   return (
-    <div id='div'>
+    <div ref={containerRef}>
       <svg
         id='wrapper'
         width={props.dimensions.width}
@@ -81,14 +88,32 @@ let Timeline = (props: TimelineChartProps) => {
             scale={scales.yScale}
             label=''
           />
+
           {props.data[0].name ? (
             props.data.map((d, i) => (
-              <Line
-                data={d.values}
-                xAccessorScaled={xAccessorScaled}
-                yAccessorScaled={yAccessorScaled}
-                colorAccessorScaled={colorAccessorScaled}
-              />
+              <>
+                {/* <LineChartDateBisector
+                  dimensions={props.dimensions}
+                  data={d.values}
+                /> */}
+
+                <Line
+                  data={d.values}
+                  xAccessorScaled={xAccessorScaled}
+                  yAccessorScaled={yAccessorScaled}
+                  colorAccessorScaled={colorAccessorScaled}
+                />
+                {/* <Tooltip
+                  className='tooltip'
+                  anchorEl={containerRef.current}
+                  width={props.dimensions.boundedWidth}
+                  height={props.dimensions.boundedHeight}
+                  margin={props.dimensions.margin}
+                  xScale={scales.xScale}
+                  yScale={scales.yScale}
+                  data={d.values}
+                /> */}
+              </>
             ))
           ) : (
             <Line

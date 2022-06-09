@@ -6,8 +6,16 @@ import { D } from '../types';
 
 type LineProps = {
   data: [number, number][] | Iterable<[number, number]> | D[];
-  xAccessorScaled: (d: D) => number | number;
-  yAccessorScaled: (d: D) => number | number;
+  xAccessorScaled: (
+    d: [number, number],
+    index: number,
+    data: [number, number][],
+  ) => number;
+  yAccessorScaled: (
+    d: [number, number],
+    index: number,
+    data: Iterable<[number, number]> | [number, number][],
+  ) => number;
   colorAccessorScaled: (d: D) => string;
 };
 
@@ -29,7 +37,7 @@ const Line = ({
     <path
       {...props}
       className={`Line Line--type-line`}
-      d={lineGenerator(data) as string | undefined}
+      d={lineGenerator(data)}
       stroke={colorAccessorScaled(data[0])}
     />
   );

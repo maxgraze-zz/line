@@ -5,6 +5,7 @@ import LineChart from './LineChart';
 import useWindowDimensions from '../hooks/useWindowDimensions';
 import { Dimensions, D } from '../types';
 import * as d3 from 'd3';
+import LineChartDateBisector from './LineChartDateBisector';
 import React from 'react';
 // import './styles.css';
 
@@ -98,12 +99,10 @@ const ChartWidget = ({ title }: ChartWidgetProps) => {
       </div>
       {data.length > 1 ? (
         <>
-          <LineChart
+          <LineChartDateBisector
             dimensions={dimensions.current}
-            data={data as unknown as D[]}
+            data={data[0].values as unknown as D[]}
             propertiesNames={propertiesNames}
-            // fill='tomato'
-            stroke='rgb(47, 74, 89)'
           />
         </>
       ) : (

@@ -16,6 +16,7 @@ export default class ChartHelper {
 
   // @ts-ignore
   public xAccessor = (d: D) => ChartHelper.dateParser(d[this.metric[0]]);
+
   // @ts-ignore
   public yAccessor = (d: D) => +d[this.metric[1]];
 
