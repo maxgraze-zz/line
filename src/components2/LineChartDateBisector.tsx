@@ -113,9 +113,7 @@ const LineChartDateBisector = (props: ILineChartProps) => {
       };
       //   let hoverdata = currentDate[bisect(selectDates, invert)]; //it would return 2.
       let selectedData = props.data[props.data.length - 1];
-      console.log(
-        new Date(currentDate.year, currentDate.month, currentDate.day),
-      );
+
       const i = bisect.right(
         props.data,
         new Date(currentDate.year, currentDate.month, currentDate.day),

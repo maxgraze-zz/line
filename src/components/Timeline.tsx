@@ -1,45 +1,59 @@
-import React, { useRef } from 'react';
-import * as d3 from 'd3';
+import React, { useRef, useState, useEffect } from 'react';
+import { D, Dimensions, DataRecord, AccessorFn } from '../types';
 
-export const Timeline = ({ data }) => {
+import {
+  timeFormat,
+  format,
+  extent,
+  group,
+  sort,
+  pointer,
+  bisector,
+  descending,
+  selectAll,
+  scaleTime,
+  scaleLinear,
+  curveMonotoneX,
+  select,
+  line,
+  axisLeft,
+  axisBottom,
+  scaleOrdinal,
+} from 'd3';
+
+interface TimelineProps {
+  data: D[];
+  dimensions: Dimensions;
+  propertiesNames: string[];
+}
+
+export const Timeline: React.FC<TimelineProps> = ({
+  data,
+  dimensions,
+  propertiesNames,
+  ...props
+}) => {
   //   const [data, setData] = useState<D[]>([{ date: '', value: 0, type: '' }]);
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
-  const tooltipArea = useRef(null);
 
-  data = data.sort((a, b) => b.date - a.date);
-  // eslint-disable-next-line no-console
-  const reshapeData = (data: D[]) => {
-    let names = [...new Set(data.map(d => d.type))];
-    let result = names.map(name => {
-      return {
-        name: name,
-        values: data.filter(d => name === d.type),
-      };
-    });
-    return result;
-  };
+  const [loaded, setLoaded] = useState(false);
 
-  //   useEffect(() => {
-  //     if (!loaded) {
-  //       setLoaded(true);
-  //     }
+  const [prevHeight, setPrevHeight] = useState(dimensions.height);
+  const [prevWidth, setPrevWidth] = useState(dimensions.width);
 
-  //     const isNewHeight = prevHeight !== props.dimensions.height;
-  //     const isNewWidth = prevWidth !== props.dimensions.width;
-  //     if (isNewHeight || isNewWidth) {
-  //       setPrevWidth(props.dimensions.height);
-  //       setPrevHeight(props.dimensions.width);
-  //     }
-  //   }, [prevHeight, prevWidth, props.dimensions.height, props.dimensions.width]);
+  useEffect(() => {
+    if (!loaded) {
+      setLoaded(true);
+    }
 
-  //   let mergedData = d3.merge(props.data.map(d => d.values));
-  //   let scales = ChartHelper.getScales(
-  //     mergedData as D[],
-  //     props.dimensions.boundedWidth,
-  //     props.dimensions.boundedHeight,
-  //     props.propertiesNames,
-  //   );
+    const isNewHeight = prevHeight !== dimensions.height;
+    const isNewWidth = prevWidth !== dimensions.width;
+    if (isNewHeight || isNewWidth) {
+      setPrevWidth(dimensions.height);
+      setPrevHeight(dimensions.width);
+    }
+  }, [prevHeight, prevWidth, dimensions.height, dimensions.width]);
 
   let height = 500;
   let width = 700;
@@ -48,44 +62,40 @@ export const Timeline = ({ data }) => {
   let innerWidth = width - margin.left - margin.right;
   let chartid = 'chart-change';
   let sources = ['Viewers', 'Editors'];
-  let parseTime = d3.timeParse('%Y-%m-%d');
+
+  data = data.sort((a, b) => b.date - a.date);
 
   //Accessor functions and other data manipulations to feed into the bisector and scale
-  let xAxcessor = d => parseTime(d.date);
-  let yAccessor = d => d.value;
-  let selectSeries = d3.group(data, d => d.type);
-  let selectLookup = d3.group(data, d => parseTime(d.date));
-  let selectDates = Array.from(selectLookup).map(d => parseTime(d[1][0].date));
-  let extData = d3.extent(data, d => yAccessor(d)); // filter data.set for extext
-  let extDates = d3.extent(data, d => xAxcessor(d));
-  let tlDateFormat = d3.timeFormat('%a, %b %e %Y'); // Timeline Tooltip Date Format
+  let xAxcessor: AccessorFn = d => d.date;
+  let yAccessor: AccessorFn = d => d.count;
+  let selectSeries = group(data, d => d.type);
+  let selectLookup = group(data, d => new Date(d.date));
+  let selectDates = sort(Array.from(selectLookup, ([x]) => x));
+
+  let extData = extent(data, d => yAccessor(d)) as [number, number]; // filter data.set for extext
+  let extDates = extent(data, d => xAxcessor(d)) as [Date, Date];
+  const allDates: (string | Date)[] = data.map(d => d.date);
+  let tlDateFormat = timeFormat('%a, %b %e %Y'); // Timeline Tooltip Date Format
 
   //formater for the xAxis
-  let formatDate = d3.timeFormat('%-d. %-b');
+  let xAxisTickFormat: (date: Date) => string = timeFormat('%-d. %-b');
+  let yAxisTickFormat = format('d');
 
   //Scales
-  let xScale = d3
-    .scaleTime()
-    .domain(extDates)
-    .range([0, width - margin.left - margin.right]);
+  let xScale = scaleTime().domain(extDates).range([0, innerWidth]);
 
-  let yScale = d3.scaleLinear().domain(extData).range([innerHeight, 0]).nice();
+  let yScale = scaleLinear().domain([extData[0], 10]).range([innerHeight, 0]);
 
-  let colorScale = d3
-    .scaleOrdinal()
-    .domain(sources)
-    .range(['#f59c78', '#4c97f5']);
+  let colorScale = scaleOrdinal().domain(sources).range(['#f59c78', '#4c97f5']);
 
   //Function to generate the lines
-  let lineGenerator = d3
-    .line()
+  let lineGenerator = line()
     .x(d => xScale(xAxcessor(d)))
     .y(d => yScale(yAccessor(d)))
-    .curve(d3.curveMonotoneX);
+    .curve(curveMonotoneX);
 
   //Creating the SVG and bounds
-  let svg = d3
-    .select(svgRef.current)
+  let svg = select(svgRef.current)
     .attr('viewBox', [0, 0, width, height])
     .attr('id', chartid);
 
@@ -93,25 +103,21 @@ export const Timeline = ({ data }) => {
     .append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
 
-  // d3.line()
-  //   .defined
-
-  //optional - make axis ticks fit space
-
-  // create both x axis to be rendered
-  var xAxis = d3
-    .axisBottom(xScale)
-    .ticks(10)
+  const xAxis = axisBottom(xScale)
+    .tickValues(allDates as Date[])
+    // .ticks(timeDay.every(1))
+    .ticks(allDates.length - 1)
     .tickSize(0)
     .tickPadding(10)
-    .tickFormat(null, formatDate);
+    .tickFormat(xAxisTickFormat);
 
-  if (width < 700) {
-    xAxis.tickFormat(d3.timeFormat('%b'));
-  }
+  // if (dimensions.width < 700) {
+  //   xAxis.tickFormat(d3.timeFormat('%b'));
+  // }
 
   // create the one y axis to be rendered
-  var yAxis = d3.axisLeft(yScale).tickSize(0);
+  var yAxis = axisLeft(yScale).tickSize(0).tickFormat(yAxisTickFormat);
+  // .tickValues(d3.range(0, 10));
 
   bounds
     .append('g')
@@ -133,10 +139,12 @@ export const Timeline = ({ data }) => {
     .selectAll('path')
     .data(selectSeries)
     .join('path')
-    .attr('d', d => lineGenerator(d[1]))
+    .attr('d', d =>
+      lineGenerator(d[1] as [number, number][] | Iterable<[number, number]>),
+    )
     .attr('class', d => 'ts-line ts-line-' + d[0])
     .attr('fill', 'none')
-    .attr('stroke', d => colorScale(d));
+    .attr('stroke', d => colorScale(d) as string);
 
   //Creating bisector line
   bounds
@@ -152,9 +160,7 @@ export const Timeline = ({ data }) => {
 
   // Chart Area Tooltip
 
-  let chartTip = d3
-    .select(tooltipRef.current)
-    .attr('class', 'toolTip chartTip');
+  let chartTip = select(tooltipRef.current).attr('class', 'toolTip chartTip');
   // Group for line highligt points, sits below tootTip area so point don't interfere with hover
   let yPoints = bounds.append('g').attr('class', 'y-highlight-points');
 
@@ -169,30 +175,17 @@ export const Timeline = ({ data }) => {
     .attr('opacity', 0)
     .attr('pointer-events', 'all')
     .on('pointermove', event => {
-      let [x] = d3.pointer(event);
+      let [x] = pointer(event);
       const x0 = xScale.invert(x);
-      const currentDateSplit = x0.toISOString().split('T')[0].split('-');
-      const currentDate = {
-        year: parseInt(currentDateSplit[0], 10),
-        month: parseInt(currentDateSplit[1], 10),
-        day: parseInt(currentDateSplit[2], 10),
-      };
-
-      let date = new Date(
-        currentDate.year,
-        currentDate.month - 1,
-        currentDate.day,
-      );
-      let bisect = d3.bisector(d => d).right;
-      let hoverDate = selectDates[bisect(selectDates, date)];
-      console.log(bisect(selectDates, date));
+      let bisect = bisector(d => d).center;
+      let hoverDate = selectDates[bisect(selectDates, x0)];
       // console.log(x0);
       // 1) Lookup/Get values by date 2) Filter by selection group 3) Sort by top values
       let lookup = selectLookup
         .get(hoverDate)
-        .sort((a, b) => d3.descending(a.value, b.value));
+        .sort((a, b) => descending(a.value, b.value));
       // Display and position vertical line
-      d3.select('#' + chartid + ' .y-highlight')
+      select('#' + chartid + ' .y-highlight')
         .attr('x1', xScale(hoverDate))
         .attr('x2', xScale(hoverDate))
         .style('opacity', 1);
@@ -211,7 +204,7 @@ export const Timeline = ({ data }) => {
               .append('circle')
               .attr('r', 5)
               .attr('stroke-width', '1.5px')
-              .attr('fill', 'none')
+              .attr('fill', 'white')
               .attr('stroke', d => colorScale(d.type)),
           update =>
             update
@@ -245,7 +238,7 @@ export const Timeline = ({ data }) => {
 
       chartTip
         .style('left', () => {
-          if (innerWidth - d3.pointer(event)[0] < 120) {
+          if (innerWidth - pointer(event)[0] < 120) {
             return event.pageX - (24 + 240) + 'px';
           } else {
             return event.pageX + 24 + 'px';
@@ -257,13 +250,18 @@ export const Timeline = ({ data }) => {
     })
     .on('mouseout', event => {
       chartTip.style('display', 'none'); // Hide toolTip
-      d3.select('#' + chartid + ' .y-highlight').style('opacity', 0); // Hide y-highlight line
-      d3.selectAll('#' + chartid + ' .y-highlight-point').remove(); // Remove y-highlight points
+      select('#' + chartid + ' .y-highlight').style('opacity', 0); // Hide y-highlight line
+      selectAll('#' + chartid + ' .y-highlight-point').remove(); // Remove y-highlight points
     });
 
   return (
     <div className='timeline'>
-      <svg id='chart-change' ref={svgRef} width={width} height={height}>
+      <svg
+        id='chart-change'
+        ref={svgRef}
+        width={dimensions.width}
+        height={dimensions.height}
+      >
         <g className='y-highlight-points'></g>
         {/* <rect ref={tipArea} className='tip-area'></rect> */}
       </svg>

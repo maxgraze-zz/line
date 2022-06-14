@@ -28,3 +28,8 @@ export type Dimensions = {
   boundedWidth: number;
   boundedHeight: number;
 };
+
+export type DataRecord = { [key: string]: any };
+
+type ValueOf<T> = T[keyof T];
+export type AccessorFn = (d: DataRecord, i?: number) => ValueOf<DataRecord>;

@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
 import ChartWidget from './components2/ChartWidget';
 import { Timeline } from './components/Timeline';
+import TimelineWidget from './components/TimelineWidget';
 import { useCsv } from './hooks/useCsv';
 import * as d3 from 'd3';
 import './styles.css';
 import LineChartDateBisectorWidget from './Bisector/LineChartDateBisectorWidget';
-
-let parseTime = d3.timeParse('%Y-%m-%d');
 
 const formatDataRows = ({ value, date, type }) => ({
   value: +value,
@@ -26,7 +25,7 @@ const App = () => {
     <>
       <div className='App'>
         <header className='App-header'>
-          <Timeline data={data} />
+          <TimelineWidget />
           {/* <ChartWidget title='timeline' /> */}
           {/* <LineChartDateBisectorWidget /> */}
         </header>

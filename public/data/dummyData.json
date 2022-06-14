@@ -1,0 +1,57 @@
+{
+  "viewers": 5,
+  "editors": 2,
+  "mostActive": "2022-05-05T00:00:00.000Z",
+  "data": [
+    {
+      "date": "2022-06-05T00:00:00.000Z",
+      "count": 1,
+      "type": "viewer"
+    },
+    {
+      "date": "2022-06-05T00:00:00.000Z",
+      "count": 0,
+      "type": "editor"
+    },
+    {
+      "date": "2022-06-04T00:00:00.000Z",
+      "count": 2,
+      "type": "viewer"
+    },
+    {
+      "date": "2022-06-04T00:00:00.000Z",
+      "count": 1,
+      "type": "editor"
+    },
+    {
+      "date": "2022-06-03T00:00:00.000Z",
+      "count": 2,
+      "type": "viewer"
+    },
+    {
+      "date": "2022-06-03T00:00:00.000Z",
+      "count": 0,
+      "type": "editor"
+    },
+    {
+      "date": "2022-06-02T00:00:00.000Z",
+      "count": 4,
+      "type": "viewer"
+    },
+    {
+      "date": "2022-06-02T00:00:00.000Z",
+      "count": 2,
+      "type": "editor"
+    },
+    {
+      "date": "2022-06-01T00:00:00.000Z",
+      "count": 4,
+      "type": "viewer"
+    },
+    {
+      "date": "2022-06-01T00:00:00.000Z",
+      "count": 4,
+      "type": "editor"
+    }
+  ]
+}
