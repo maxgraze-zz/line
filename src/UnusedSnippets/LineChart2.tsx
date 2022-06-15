@@ -1,10 +1,10 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import * as d3 from 'd3';
 import { D, Dimensions } from '../types';
-import ChartHelper from './ChartHelper';
-import Axis from './Axis';
-import Line from './Line';
-import { ColorLegend } from './Legend';
+import ChartHelper from '../ReactVersion/ChartHelper';
+import Axis from '../ReactVersion/Axis';
+import Line from '../ReactVersion/Line';
+import { ColorLegend } from '../ReactVersion/Legend';
 import { line } from 'd3';
 
 const formatDate = d3.timeFormat('%-d. %-b');

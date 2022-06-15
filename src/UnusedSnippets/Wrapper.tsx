@@ -1,5 +1,5 @@
 import React from 'react';
-import { Timeline } from './Timeline';
+import { Timeline } from '../D3Version/Timeline';
 
 export const wrapper = ({ graphData }) => {
   //state to handle the legend
