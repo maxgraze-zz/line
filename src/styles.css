@@ -7,9 +7,7 @@ body {
   padding: 1.6em 2em 4em;
   letter-spacing: -0.011em;
   font-family: 'Proxima nova', sans-serif;
-  font-size: 16px;
-  color: #34495e;
-  background: #f1f3f5;
+  font-size: 14px;
 }
 .Line--type-line {
   fill: none;
@@ -42,6 +40,13 @@ body {
 .date {
 }
 
+.tick {
+  color: #767676;
+}
+
+.domain {
+  stroke: #767676;
+}
 th,
 td {
   padding: 4px 16px 0px 0px;

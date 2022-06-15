@@ -99,7 +99,7 @@ const ChartWidget = ({ title }: ChartWidgetProps) => {
       </div>
       {data.length > 1 ? (
         <>
-          <LineChartDateBisector
+          <LineChart
             dimensions={dimensions.current}
             data={data[0].values as unknown as D[]}
             propertiesNames={propertiesNames}

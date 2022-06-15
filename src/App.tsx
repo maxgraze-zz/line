@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import ChartWidget from './components2/ChartWidget';
-import { Timeline } from './components/Timeline';
-import TimelineWidget from './components/TimelineWidget';
+import ChartWidget from './ReactVersion/ChartWidget';
+import { Timeline } from './D3Version/Timeline';
+import TimelineWidget from './D3Version/TimelineWidget';
 import { useCsv } from './hooks/useCsv';
 import * as d3 from 'd3';
 import './styles.css';
@@ -27,7 +27,6 @@ const App = () => {
         <header className='App-header'>
           <TimelineWidget />
           {/* <ChartWidget title='timeline' /> */}
-          {/* <LineChartDateBisectorWidget /> */}
         </header>
       </div>
     </>

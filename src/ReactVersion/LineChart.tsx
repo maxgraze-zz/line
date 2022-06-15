@@ -132,9 +132,7 @@ let Timeline = (props: TimelineChartProps) => {
 interface TimelineChartProps {
   data: D[];
   dimensions: Dimensions;
-  // fill: string;
   propertiesNames: string[];
-  stroke: string;
 }
 
 export default Timeline;
